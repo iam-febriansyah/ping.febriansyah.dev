@@ -2,6 +2,7 @@ import subprocess
 import aiofiles
 import asyncio
 import os
+import time
 from discord_webhook import DiscordWebhook, DiscordEmbed
 from dotenv import load_dotenv
 load_dotenv()
@@ -15,7 +16,7 @@ async def ping_ip():
             for line in lines:
                 ip_address = line.strip()
                 output = subprocess.run(
-                    ['ping', '-n', '2', ip_address],
+                    ['ping', '-n', os.getenv("PING_TIMES"), ip_address],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
@@ -26,6 +27,7 @@ async def ping_ip():
                 send_webhook(ips=ips, title="IP Intermittent", webhook=os.getenv("DISCORD_WEBHOOK"))
         except Exception as e:
             print(f"An error occurred: {e}")
+        time.sleep(int(os.getenv("SLEEP_DELAY")))
         
 def send_webhook(ips : list, title : str, webhook : str):
     desc = ''
